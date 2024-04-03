@@ -10,7 +10,7 @@ async fn main() {
 
   LogProxy::default()
     .disable_lambda_telemetry_log_fd(
-      std::env::var("AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD")
+      std::env::var("AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER")
         .map(|s| s == "true")
         .unwrap_or(false),
     )
