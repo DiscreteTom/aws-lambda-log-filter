@@ -63,8 +63,8 @@ impl TransformerFactory {
 
     if let Some(level) = &self.wrap_in_json_level {
       line = serde_json::json!({
-        "level": level,
         "timestamp": chrono::Utc::now().format("%Y-%m-%dT%H:%M:%S%.6fZ").to_string(),
+        "level": level,
         "message": line,
       })
       .to_string();
