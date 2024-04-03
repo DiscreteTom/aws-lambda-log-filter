@@ -81,3 +81,130 @@ fn is_emf(line: &str) -> bool {
     .map(|value: Value| value.get("_aws").is_some())
     .unwrap_or(false)
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn check_emf() {
+    // compact
+    assert!(is_emf(r#"{"_aws":{"key":"value"}}"#));
+    // with whitespace
+    assert!(is_emf(r#"{"_aws": {"key": "value"}}"#));
+    assert!(is_emf(r#"  {  "_aws"  : {"key": "value"}  }  "#));
+
+    // missing _aws key
+    assert!(!is_emf(r#"{"key": "value"}"#));
+    assert!(!is_emf(r#"{"  _aws":{"key":"value"}}"#));
+    // invalid JSON
+    assert!(!is_emf(r#"{"_aws": {"key": "value"}"#));
+  }
+
+  fn assert_kept(factory: &TransformerFactory, line: &str) {
+    assert_eq!(factory.create()(line.to_string()), Some(line.to_string()));
+  }
+  fn assert_kept_emf(factory: &TransformerFactory) {
+    // emf will always be kept and not modified
+    let line = r#"{"_aws":{"key":"value"}}"#;
+    assert_kept(factory, line);
+  }
+  fn assert_kept_json(factory: &TransformerFactory, line: &str, level: &str) {
+    let res: Value = serde_json::from_str(&factory.create()(line.to_string()).unwrap()).unwrap();
+    assert_eq!(res["level"], level);
+    assert!(res["timestamp"].is_string());
+    assert_eq!(
+      res["timestamp"].as_str().unwrap().len(),
+      "2023-11-02T16:51:31.587199Z".len()
+    );
+    assert_eq!(res["message"], line);
+  }
+  fn assert_ignored(factory: &TransformerFactory, line: &str) {
+    assert_eq!(factory.create()(line.to_string()), None);
+  }
+
+  #[test]
+  fn transformer_factory() {
+    // kept all by default
+    let tf = TransformerFactory {
+      filter_by_prefix: None,
+      ignore_by_prefix: None,
+      filter_by_regex: None,
+      ignore_by_regex: None,
+      wrap_in_json_level: None,
+    };
+    assert_kept(&tf, "123");
+    assert_kept_emf(&tf);
+
+    // filter by prefix
+    let tf = TransformerFactory {
+      filter_by_prefix: Some("prefix".to_string()),
+      ignore_by_prefix: None,
+      filter_by_regex: None,
+      ignore_by_regex: None,
+      wrap_in_json_level: None,
+    };
+    assert_kept(&tf, "prefix123");
+    assert_ignored(&tf, "123");
+    assert_kept_emf(&tf);
+
+    // ignore by prefix
+    let tf = TransformerFactory {
+      filter_by_prefix: None,
+      ignore_by_prefix: Some("prefix".to_string()),
+      filter_by_regex: None,
+      ignore_by_regex: None,
+      wrap_in_json_level: None,
+    };
+    assert_ignored(&tf, "prefix123");
+    assert_kept(&tf, "123");
+    assert_kept_emf(&tf);
+
+    // filter by regex
+    let tf = TransformerFactory {
+      filter_by_prefix: None,
+      ignore_by_prefix: None,
+      filter_by_regex: Some(Regex::new(r"^\d+$").unwrap()),
+      ignore_by_regex: None,
+      wrap_in_json_level: None,
+    };
+    assert_kept(&tf, "123");
+    assert_ignored(&tf, "abc");
+    assert_kept_emf(&tf);
+
+    // ignore by regex
+    let tf = TransformerFactory {
+      filter_by_prefix: None,
+      ignore_by_prefix: None,
+      filter_by_regex: None,
+      ignore_by_regex: Some(Regex::new(r"^\d+$").unwrap()),
+      wrap_in_json_level: None,
+    };
+    assert_ignored(&tf, "123");
+    assert_kept(&tf, "abc");
+    assert_kept_emf(&tf);
+
+    // wrap in json level
+    let tf = TransformerFactory {
+      filter_by_prefix: None,
+      ignore_by_prefix: None,
+      filter_by_regex: None,
+      ignore_by_regex: None,
+      wrap_in_json_level: Some("debug".to_string()),
+    };
+    assert_kept_json(&tf, "123", "debug");
+    assert_kept_emf(&tf);
+
+    // filter and wrap
+    let tf = TransformerFactory {
+      filter_by_prefix: Some("prefix".to_string()),
+      ignore_by_prefix: None,
+      filter_by_regex: None,
+      ignore_by_regex: None,
+      wrap_in_json_level: Some("debug".to_string()),
+    };
+    assert_kept_json(&tf, "prefix123", "debug");
+    assert_ignored(&tf, "123");
+    assert_kept_emf(&tf);
+  }
+}
