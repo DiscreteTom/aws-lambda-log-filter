@@ -1,0 +1,18 @@
+[package]
+name = "aws-lambda-log-filter"
+version = "0.1.0"
+edition = "2021"
+authors = ["DiscreteTom <discrete_tom@outlook.com>"]
+description = "A lambda layer to save your money."
+readme = "README.md"
+keywords = ["aws", "lambda", "cloudwatch", "log", "filter"]
+license-file = "LICENSE"
+repository = "https://github.com/DiscreteTom/aws-lambda-log-filter"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+aws-lambda-log-proxy = "0.1"
+regex = "1.10.4"
+tokio = { version = "1", features = ["full"] }
+serde_json = "1.0"
