@@ -1,9 +1,33 @@
 use aws_lambda_log_proxy::{LogProxy, Sink};
 use serde_json::Value;
 
+#[derive(Clone)]
+struct Config {}
+
+impl Config {
+  pub fn new() -> Self {
+    Self {}
+  }
+
+  pub fn create_transformer(&self) -> impl FnMut(String) -> Option<String> {
+    let s = self.clone();
+    move |line| s.transform(line)
+  }
+
+  fn transform(&self, line: String) -> Option<String> {
+    if is_emf(&line) {
+      // don't do any thing with emf logs
+      return Some(line);
+    }
+
+    Some(line)
+  }
+}
+
 #[tokio::main]
 async fn main() {
   let sink = Sink::stdout();
+  let config = Config::new();
 
   LogProxy::default()
     .disable_lambda_telemetry_log_fd(
@@ -11,23 +35,13 @@ async fn main() {
         .map(|s| s == "true")
         .unwrap_or(false),
     )
-    .stdout(|p| p.transformer(create_transformer()).sink(sink.clone()))
-    .stderr(|p| p.transformer(create_transformer()).sink(sink))
+    .stdout(|p| {
+      p.transformer(config.create_transformer())
+        .sink(sink.clone())
+    })
+    .stderr(|p| p.transformer(config.create_transformer()).sink(sink))
     .start()
     .await;
-}
-
-fn create_transformer() -> impl FnMut(String) -> Option<String> {
-  |line| {
-    if is_emf(&line) {
-      // don't do any thing with emf logs
-      return Some(line);
-    }
-
-    // TODO: transform the line here
-
-    Some(line)
-  }
 }
 
 /// Return if the line is a valid JSON with the "_aws" key.
