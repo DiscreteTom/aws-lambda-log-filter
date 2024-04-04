@@ -10,6 +10,7 @@ on:
 
 env:
   VERSION:
+  RUSTFLAGS: -C link-arg=-s
 
 jobs:
   publish:

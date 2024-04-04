@@ -1,2 +1,2 @@
 [build.env]
-passthrough = ["RUSTFLAGS=\"-C link-arg=-s\""]
+passthrough = ["RUSTFLAGS"]
