@@ -1,0 +1,45 @@
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish, starts with 'v'"
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          - aarch64-unknown-linux-musl
+          - x86_64-unknown-linux-musl
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          override: true
+          target: ${{ matrix.target }}
+
+      - uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: build
+          args: --release --target ${{ matrix.target }}
+          # TODO: add RUSTFLAGS='-C link-arg=-s'
+
+      - run: |
+          mkdir -p layer/${{ matrix.target }}
+          mkdir -p dist
+          cp target/${{ matrix.target }}/release/aws-lambda-log-filter layer/${{ matrix.target }}
+          cp scripts/entry.sh layer/${{ matrix.target }}
+          zip -j dist/aws-lambda-log-filter-${{ inputs.version }}-layer-${{ matrix.target }}.zip layer/${{ matrix.target }}/aws-lambda-log-filter layer/${{ matrix.target }}/entry.sh
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: ${{ inputs.version }}
+          title: ${{ inputs.version }}
+          files: |
+            dist/*.zip
