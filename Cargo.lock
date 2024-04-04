@@ -60,11 +60,12 @@ dependencies = [
 
 [[package]]
 name = "aws-lambda-log-proxy"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4361a3c13e42ed1af9dbfe95ab0be3e7a9758ec4b76df84f95132b795096c8f1"
+checksum = "3296de5c863a3683d1f0283d5a0f8881433a816d0c5a1d4fb27989cdd906a43f"
 dependencies = [
  "aws-lambda-runtime-proxy",
+ "chrono",
  "tokio",
 ]
 
