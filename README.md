@@ -14,10 +14,18 @@ A lambda layer to save your money.
 
 ### As a Lambda Layer
 
-1. Build this project to executable binary via `cargo build --release`. Or check the pre-built binaries in the [release page](https://github.com/DiscreteTom/aws-lambda-log-filter/releases/latest).
-2. Zip `scripts/entry.sh` and `target/release/aws-lambda-log-filter` and upload it as a lambda layer.
+1. Download the prebuilt zip from the [release page](https://github.com/DiscreteTom/aws-lambda-log-filter/releases/latest). You can also build it yourself by running `cargo build --release`, then zip `scripts/entry.sh` with `target/release/aws-lambda-log-filter`.
+2. Upload the zip as a lambda layer. Add the layer to your lambda function.
 3. Add an environment variable `AWS_LAMBDA_EXEC_WRAPPER` to the lambda function with the value `/opt/entry.sh` to enable the filter process.
-4. Configure the following environment variables to filter the logs.
+4. Configure the [environment variables](#environment-variables) below to control how to filter the logs.
+
+### As a Binary Executable
+
+If you are using a custom lambda runtime or container image, you can run the filter as a parent process of your main handler process.
+
+1. Download the prebuilt zip from the [release page](https://github.com/DiscreteTom/aws-lambda-log-filter/releases/latest) to get the `aws-lambda-log-filter` executable. You can also build it yourself by running `cargo build --release`.
+2. Modify the entry command of the lambda function to `aws-lambda-log-filter <handler-command> <handler-args>`
+3. Configure the [environment variables](#environment-variables) below to control how to filter the logs.
 
 ### Environment Variables
 
@@ -52,5 +60,7 @@ A lambda layer to save your money.
 
 - Q: The filter configuration is not working, all logs are still there.
   - Try to set `AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER` to `true`.
+- Q: How this works? / How to write my own version?
+  - See [AWS Lambda Log Proxy](https://github.com/DiscreteTom/aws-lambda-log-proxy).
 
 ## [CHANGELOG](./CHANGELOG.md)
