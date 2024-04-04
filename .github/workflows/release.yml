@@ -24,10 +24,9 @@ jobs:
 
       - uses: actions-rs/cargo@v1
         with:
-          use-cross: true
+          use-cross: true # see Cross.toml
           command: build
           args: --release --target ${{ matrix.target }}
-          # TODO: add RUSTFLAGS='-C link-arg=-s'
 
       - run: |
           mkdir -p layer/${{ matrix.target }}
