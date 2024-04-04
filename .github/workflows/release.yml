@@ -1,7 +1,15 @@
 on:
   push:
     tags:
-      - "v*"
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version of release, e.g. v0.1.0"
+        required: true
+
+env:
+  VERSION:
 
 jobs:
   publish:
@@ -13,12 +21,16 @@ jobs:
           - x86_64-unknown-linux-musl
 
     steps:
+      # set the verion to the input. if not set, it will be the tag name
+      - run: echo "VERSION=${{ inputs.version || github.ref_name }}" >> $GITHUB_ENV
+
       - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
           override: true
           target: ${{ matrix.target }}
+          components: rustfmt, clippy
 
       - uses: actions-rs/cargo@v1
         with:
@@ -31,12 +43,16 @@ jobs:
           mkdir -p dist
           cp target/${{ matrix.target }}/release/aws-lambda-log-filter layer/${{ matrix.target }}
           cp scripts/entry.sh layer/${{ matrix.target }}
-          zip -j dist/aws-lambda-log-filter-${{ github.ref_name }}-layer-${{ matrix.target }}.zip layer/${{ matrix.target }}/aws-lambda-log-filter layer/${{ matrix.target }}/entry.sh
+          zip -j dist/aws-lambda-log-filter-${{ env.VERSION }}-layer-${{ matrix.target }}.zip layer/${{ matrix.target }}/aws-lambda-log-filter layer/${{ matrix.target }}/entry.sh
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${{ github.ref_name }}
-          title: ${{ github.ref_name }}
+          automatic_release_tag: ${{ env.VERSION }}
+          title: ${{ env.VERSION }}
           files: |
             dist/*.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aws-lambda-log-filter-${{ env.VERSION }}-layer-${{ matrix.target }}
+          path: dist/aws-lambda-log-filter-${{ env.VERSION }}-layer-${{ matrix.target }}.zip
