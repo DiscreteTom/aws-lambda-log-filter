@@ -1,9 +1,7 @@
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "Version to publish, starts with 'v'"
-        required: true
+  push:
+    tags:
+      - "v*"
 
 jobs:
   publish:
@@ -33,12 +31,12 @@ jobs:
           mkdir -p dist
           cp target/${{ matrix.target }}/release/aws-lambda-log-filter layer/${{ matrix.target }}
           cp scripts/entry.sh layer/${{ matrix.target }}
-          zip -j dist/aws-lambda-log-filter-${{ inputs.version }}-layer-${{ matrix.target }}.zip layer/${{ matrix.target }}/aws-lambda-log-filter layer/${{ matrix.target }}/entry.sh
+          zip -j dist/aws-lambda-log-filter-${{ github.ref_name }}-layer-${{ matrix.target }}.zip layer/${{ matrix.target }}/aws-lambda-log-filter layer/${{ matrix.target }}/entry.sh
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${{ inputs.version }}
-          title: ${{ inputs.version }}
+          automatic_release_tag: ${{ github.ref_name }}
+          title: ${{ github.ref_name }}
           files: |
             dist/*.zip
