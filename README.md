@@ -21,7 +21,7 @@ A lambda layer to save your money.
 
 ### As a Binary Executable
 
-If you are using a custom lambda runtime or container image, you can run the filter as a parent process of your main handler process.
+If you are using a custom lambda runtime (for rust, golang, c++, etc) or container image, you can run the filter as a parent process of your main handler process.
 
 1. Download the prebuilt zip from the [release page](https://github.com/DiscreteTom/aws-lambda-log-filter/releases/latest) to get the `aws-lambda-log-filter` executable. You can also build it yourself by running `cargo build --release`.
 2. Modify the entry command of the lambda function to `aws-lambda-log-filter <handler-command> <handler-args>`
@@ -60,6 +60,9 @@ If you are using a custom lambda runtime or container image, you can run the fil
 
 - Q: The filter configuration is not working, all logs are still there.
   - Try to set `AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER` to `true`.
+  - [Wrapper scripts](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-modify.html#runtime-wrapper) are not supported on [OS-only runtimes](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-provided.html) (the provided runtime family). So the layer approach won't work for functions in rust, golang, c++, etc. Try the [binary executable approach](#as-a-binary-executable) instead.
+- Q: `/opt/aws-lambda-log-filter: /lib64/libc.so.6: version 'GLIBC_2.28' not found` error when invoke the lambda function.
+  - Build the binary with musl target to include the C runtime: `cargo build --release --target=x86_64-unknown-linux-musl`.
 - Q: How this works? / How to write my own version?
   - See [AWS Lambda Log Proxy](https://github.com/DiscreteTom/aws-lambda-log-proxy).
 
