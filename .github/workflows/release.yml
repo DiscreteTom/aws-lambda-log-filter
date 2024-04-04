@@ -37,18 +37,16 @@ jobs:
         env:
           RUSTFLAGS: -C link-arg=-s
         with:
-          use-cross: true # see Cross.toml
+          use-cross: true
           command: build
           args: --release --target ${{ matrix.target }}
 
       - run: |
-          mkdir -p layer/${{ matrix.target }}
-          mkdir -p dist
-          cp target/${{ matrix.target }}/release/aws-lambda-log-filter layer/${{ matrix.target }}
-          cp scripts/entry.sh layer/${{ matrix.target }}
-          zip -j dist/aws-lambda-log-filter-${{ env.VERSION }}-layer-${{ matrix.target }}.zip layer/${{ matrix.target }}/aws-lambda-log-filter layer/${{ matrix.target }}/entry.sh
+          mkdir layer/
+          cp target/${{ matrix.target }}/release/aws-lambda-log-filter layer/
+          cp scripts/entry.sh layer/
 
       - uses: actions/upload-artifact@v4
         with:
           name: aws-lambda-log-filter-${{ env.VERSION }}-layer-${{ matrix.target }}
-          path: dist/aws-lambda-log-filter-${{ env.VERSION }}-layer-${{ matrix.target }}.zip
+          path: layer/
