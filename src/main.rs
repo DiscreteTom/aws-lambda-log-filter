@@ -5,7 +5,7 @@ use transformer::TransformerFactory;
 
 #[tokio::main]
 async fn main() {
-  let sink = Sink::stdout();
+  let sink = Sink::lambda_telemetry_log_fd().unwrap_or_else(|_| Sink::stdout());
   let tf = TransformerFactory::new();
 
   LogProxy::default()
