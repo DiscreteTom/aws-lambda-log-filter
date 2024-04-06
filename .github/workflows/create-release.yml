@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version of release, e.g. v0.1.0"
+        description: "Version of the release, should match an existing tag name. E.g. v0.1.0"
         required: true
 
 env:
@@ -17,15 +17,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # set the verion to the input. if not set, it will be the tag name
+      # set the verion to the input. if the input is not set (triggered by tag), it will be the tag name
       - run: echo "VERSION=${{ inputs.version || github.ref_name }}" >> $GITHUB_ENV
 
       # create the release
-      - run: gh release create ${{ env.VERSION }} -t ${{ env.VERSION }} --verify-tag -n "See CHANGELOG.md"
+      - run: gh release create ${{ env.VERSION }} -t ${{ env.VERSION }} --verify-tag -n "See [CHANGELOG.md](https://github.com/DiscreteTom/aws-lambda-log-filter/blob/main/CHANGELOG.md)."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # upload the artifacts
-      - run: gh workflow run upload-artifacts.yaml --field version=${{ env.VERSION }}
+      # build and upload artifacts to the release.
+      # this is a separate workflow so we can also run it manually
+      - run: gh workflow run build-and-upload-release-assets.yaml --field version=${{ env.VERSION }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -2,15 +2,16 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version of release, e.g. v0.1.0"
+        description: "Version of the release, should match an existing tag name. E.g. v0.1.0"
         required: true
 
 jobs:
-  upload-artifacts:
+  build-and-upload-release-assets:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         target:
+          # use musl to ensure the c-runtime is statically linked
           - aarch64-unknown-linux-musl
           - x86_64-unknown-linux-musl
 
@@ -24,24 +25,30 @@ jobs:
           target: ${{ matrix.target }}
           components: rustfmt, clippy
 
+      # build the binary
       - uses: actions-rs/cargo@v1
         env:
+          # strip the binary to reduce its size.
+          # this env will be passthrough to the `cross` automatically
           RUSTFLAGS: -C link-arg=-s
         with:
           use-cross: true
           command: build
           args: --release --target ${{ matrix.target }}
 
+      # zip the binary and the entry script
       - run: |
           mkdir layer/
           cp target/${{ matrix.target }}/release/aws-lambda-log-filter layer/
           cp scripts/entry.sh layer/
           zip -j aws-lambda-log-filter-${{ inputs.version }}-layer-${{ matrix.target }}.zip layer/*
 
+      # delete the asset if it already exists
       - run: gh release delete-asset ${{ inputs.version }} aws-lambda-log-filter-${{ inputs.version }}-layer-${{ matrix.target }}.zip -y || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # upload the asset
       - run: gh release upload ${{ inputs.version }} aws-lambda-log-filter-${{ inputs.version }}-layer-${{ matrix.target }}.zip
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
