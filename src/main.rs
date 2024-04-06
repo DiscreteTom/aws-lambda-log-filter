@@ -21,3 +21,25 @@ fn create_proxy() -> LogProxy {
 async fn main() {
   create_proxy().start().await;
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use std::env;
+
+  #[test]
+  fn test_create_proxy() {
+    let proxy = create_proxy();
+    assert_eq!(proxy.disable_lambda_telemetry_log_fd, false);
+    assert_eq!(proxy.stdout.is_some(), true);
+    assert_eq!(proxy.stderr.is_some(), true);
+
+    env::set_var(
+      "AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER",
+      "true",
+    );
+    let proxy = create_proxy();
+    assert_eq!(proxy.disable_lambda_telemetry_log_fd, true);
+    env::remove_var("AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER");
+  }
+}
