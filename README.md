@@ -1,5 +1,7 @@
 # AWS Lambda Log Filter
 
+[![Codecov](https://img.shields.io/codecov/c/github/DiscreteTom/aws-lambda-log-filter?style=flat-square)
+](https://codecov.io/gh/DiscreteTom/aws-lambda-log-filter)
 [![version](https://img.shields.io/github/v/tag/DiscreteTom/aws-lambda-log-filter?label=release&style=flat-square)](https://github.com/DiscreteTom/aws-lambda-log-filter/releases/latest)
 ![license](https://img.shields.io/github/license/DiscreteTom/aws-lambda-log-filter?style=flat-square)
 ![rust](https://img.shields.io/badge/built_with-rust-DEA584?style=flat-square)
