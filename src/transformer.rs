@@ -74,15 +74,16 @@ impl TransformerFactory {
   }
 }
 
-/// Return if the line is a valid JSON object with the "_aws" key.
+/// Return if the line is a valid JSON object with the `"_aws"` key.
 fn is_emf(line: &str) -> bool {
-  // perf: check if the line starts with '{' before parsing
+  // perf: check if the line is wrapped with `{}` before parsing it as JSON
   // so we can fast fail if it's not a JSON object
-  if !line.trim_start().starts_with('{') {
+  let trimmed = line.trim();
+  if !trimmed.starts_with('{') || !trimmed.ends_with('}') {
     return false;
   }
 
-  serde_json::from_str(line)
+  serde_json::from_str(trimmed)
     .ok()
     .map(|value: Value| value.get("_aws").is_some())
     .unwrap_or(false)

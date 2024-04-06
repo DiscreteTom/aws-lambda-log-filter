@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Next
+
+- Perf: fast fail if the log line doesn't ends with `}` when checking EMF.
+
 ## v0.1.2
 
 - Note: bump dependencies to avoid h2 vulnerability. See https://seanmonstar.com/blog/hyper-http2-continuation-flood/.
