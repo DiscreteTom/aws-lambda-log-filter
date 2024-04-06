@@ -3,8 +3,7 @@ mod transformer;
 use aws_lambda_log_proxy::{LogProxy, Sink};
 use transformer::TransformerFactory;
 
-#[tokio::main]
-async fn main() {
+fn create_proxy() -> LogProxy {
   let sink = Sink::lambda_telemetry_log_fd().unwrap_or_else(|_| Sink::stdout());
   let tf = TransformerFactory::new();
 
@@ -16,6 +15,9 @@ async fn main() {
     )
     .stdout(|p| p.transformer(tf.create()).sink(sink.clone()))
     .stderr(|p| p.transformer(tf.create()).sink(sink))
-    .start()
-    .await;
+}
+
+#[tokio::main]
+async fn main() {
+  create_proxy().start().await;
 }
