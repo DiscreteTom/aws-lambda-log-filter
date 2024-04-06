@@ -92,6 +92,7 @@ fn is_emf(line: &str) -> bool {
 #[cfg(test)]
 mod tests {
   use super::*;
+  use std::{collections::HashMap, env};
 
   #[test]
   fn check_emf() {
@@ -130,6 +131,43 @@ mod tests {
   }
   fn assert_ignored(factory: &TransformerFactory, line: &str) {
     assert_eq!(factory.create()(line.to_string()), None);
+  }
+  fn with_env(map: HashMap<&str, &str>, f: impl Fn()) {
+    for (key, value) in &map {
+      env::set_var(key, value);
+    }
+    f();
+    for (key, _) in &map {
+      env::remove_var(key);
+    }
+  }
+
+  #[test]
+  fn transformer_factory_new() {
+    let tf = TransformerFactory::new();
+    assert!(matches!(tf.filter_by_prefix, None));
+    assert!(matches!(tf.ignore_by_prefix, None));
+    assert!(matches!(tf.filter_by_regex, None));
+    assert!(matches!(tf.ignore_by_regex, None));
+    assert!(matches!(tf.wrap_in_json_level, None));
+
+    with_env(
+      HashMap::from([
+        ("AWS_LAMBDA_LOG_FILTER_FILTER_BY_PREFIX", "filter-prefix"),
+        ("AWS_LAMBDA_LOG_FILTER_IGNORE_BY_PREFIX", "ignore-prefix"),
+        ("AWS_LAMBDA_LOG_FILTER_FILTER_BY_REGEX", r"^\d+$"),
+        ("AWS_LAMBDA_LOG_FILTER_IGNORE_BY_REGEX", r"^\d+$"),
+        ("AWS_LAMBDA_LOG_FILTER_WRAP_IN_JSON_LEVEL", "DEBUG"),
+      ]),
+      || {
+        let tf = TransformerFactory::new();
+        assert_eq!(tf.filter_by_prefix, Some("filter-prefix".to_string()));
+        assert_eq!(tf.ignore_by_prefix, Some("ignore-prefix".to_string()));
+        assert_eq!(tf.filter_by_regex.unwrap().as_str(), r"^\d+$");
+        assert_eq!(tf.ignore_by_regex.unwrap().as_str(), r"^\d+$");
+        assert_eq!(tf.wrap_in_json_level, Some("DEBUG".to_string()));
+      },
+    );
   }
 
   #[test]
