@@ -1,0 +1,168 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Handler: src/index.handler
+    Runtime: nodejs20.x
+    CodeUri: nodejs
+    MemorySize: 2048
+    Timeout: 30
+
+Resources:
+  LogFilterLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: ../layer/
+      CompatibleArchitectures:
+        - x86_64
+
+  Disabled10LogFilterTestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /disabled/10
+            Method: get
+      Environment:
+        Variables:
+          LOG_COUNT: 10
+  Enabled10LogFilterTestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Layers:
+        - !Ref LogFilterLayer
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /enabled/10
+            Method: get
+      Environment:
+        Variables:
+          LOG_COUNT: 10
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/entry.sh
+          AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD: "true"
+          AWS_LAMBDA_LOG_FILTER_IGNORE_BY_REGEX: "@gmail"
+  Disabled100LogFilterTestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /disabled/100
+            Method: get
+      Environment:
+        Variables:
+          LOG_COUNT: 100
+  Enabled100LogFilterTestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Layers:
+        - !Ref LogFilterLayer
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /enabled/100
+            Method: get
+      Environment:
+        Variables:
+          LOG_COUNT: 100
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/entry.sh
+          AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD: "true"
+          AWS_LAMBDA_LOG_FILTER_IGNORE_BY_REGEX: "@gmail"
+  Disabled1000LogFilterTestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /disabled/1000
+            Method: get
+      Environment:
+        Variables:
+          LOG_COUNT: 1000
+  Enabled1000LogFilterTestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Layers:
+        - !Ref LogFilterLayer
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /enabled/1000
+            Method: get
+      Environment:
+        Variables:
+          LOG_COUNT: 1000
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/entry.sh
+          AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD: "true"
+          AWS_LAMBDA_LOG_FILTER_IGNORE_BY_REGEX: "@gmail"
+  Disabled10000LogFilterTestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /disabled/10000
+            Method: get
+      Environment:
+        Variables:
+          LOG_COUNT: 10000
+  Enabled10000LogFilterTestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Layers:
+        - !Ref LogFilterLayer
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /enabled/10000
+            Method: get
+      Environment:
+        Variables:
+          LOG_COUNT: 10000
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/entry.sh
+          AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD: "true"
+          AWS_LAMBDA_LOG_FILTER_IGNORE_BY_REGEX: "@gmail"
+  Disabled100000LogFilterTestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /disabled/100000
+            Method: get
+      Environment:
+        Variables:
+          LOG_COUNT: 100000
+  Enabled100000LogFilterTestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Layers:
+        - !Ref LogFilterLayer
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /enabled/100000
+            Method: get
+      Environment:
+        Variables:
+          LOG_COUNT: 100000
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/entry.sh
+          AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD: "true"
+          AWS_LAMBDA_LOG_FILTER_IGNORE_BY_REGEX: "@gmail"
+
+Outputs:
+  API:
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
