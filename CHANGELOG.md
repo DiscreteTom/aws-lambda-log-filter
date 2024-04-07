@@ -3,6 +3,7 @@
 ## Next
 
 - Perf: fast fail if the log line doesn't ends with `}` when checking EMF.
+- Perf: apply single thread tokio executor.
 
 ## v0.1.2
 

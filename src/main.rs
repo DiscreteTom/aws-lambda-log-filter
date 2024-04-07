@@ -17,7 +17,7 @@ fn create_proxy() -> LogProxy {
     .stderr(|p| p.transformer(tf.create()).sink(sink))
 }
 
-#[tokio::main]
+#[tokio::main(flavor = "current_thread")]
 async fn main() {
   create_proxy().start().await;
 }
