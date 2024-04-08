@@ -17,9 +17,21 @@ fn create_proxy() -> LogProxy {
     .stderr(|p| p.transformer(tf.create()).sink(sink))
 }
 
-#[tokio::main(flavor = "current_thread")]
-async fn main() {
-  create_proxy().start().await;
+fn main() {
+  if std::env::var("AWS_LAMBDA_LOG_FILTER_MULTI_THREAD")
+    .map(|s| s == "true")
+    .unwrap_or(false)
+  {
+    tokio::runtime::Builder::new_multi_thread()
+  } else {
+    tokio::runtime::Builder::new_current_thread()
+  }
+  .enable_all()
+  .build()
+  .unwrap()
+  .block_on(async {
+    create_proxy().start().await;
+  })
 }
 
 #[cfg(test)]
