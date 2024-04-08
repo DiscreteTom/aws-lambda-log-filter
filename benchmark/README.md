@@ -1,6 +1,6 @@
 # Benchmark
 
-## Steps
+## Deploy
 
 ```bash
 # go to the root folder of this project
@@ -20,6 +20,12 @@ sam deploy -g
 > cd .. && RUSTFLAGS="-C link-arg=-s" cargo build --release --target x86_64-unknown-linux-musl && cp target/x86_64-unknown-linux-musl/release/aws-lambda-log-filter layer && cd benchmark && sam build && sam deploy
 > ```
 
+## Validate
+
+Run [`./validate.sh`](./validate.sh) to ensure the `invocation/next` is properly suppressed.
+
+## Test
+
 The SAM will deploy the stack with an API. Test it with `plow`:
 
 ```bash
@@ -30,3 +36,5 @@ plow -n 1000 https://abcdefgh.execute-api.us-east-1.amazonaws.com/Prod/enabled/1
 ```
 
 After tests with `plow`, checkout integration latency in API Gateway's metrics and duration in lambda metrics.
+
+Or with [Lambda Power Tuning](https://github.com/alexcasalboni/aws-lambda-power-tuning).
