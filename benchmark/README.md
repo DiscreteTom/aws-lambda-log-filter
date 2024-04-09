@@ -3,22 +3,22 @@
 ## Deploy
 
 ```bash
-# go to the root folder of this project
-cd ..
+# run in the root folder of this project
 RUSTFLAGS="-C link-arg=-s" cargo build --release --target x86_64-unknown-linux-musl
 cp target/x86_64-unknown-linux-musl/release/aws-lambda-log-filter layer
 cp scripts/entry.sh layer
 
 cd benchmark
 sam build
-sam deploy -g
+sam deploy # maybe add '-g' for the first time
+cd ..
 ```
 
-> In one line:
->
-> ```bash
-> cd .. && RUSTFLAGS="-C link-arg=-s" cargo build --release --target x86_64-unknown-linux-musl && cp target/x86_64-unknown-linux-musl/release/aws-lambda-log-filter layer && cd benchmark && sam build && sam deploy
-> ```
+In one line:
+
+```bash
+RUSTFLAGS="-C link-arg=-s" cargo build --release --target x86_64-unknown-linux-musl && cp target/x86_64-unknown-linux-musl/release/aws-lambda-log-filter layer && cp scripts/entry.sh layer && cd benchmark && sam build && sam deploy && cd ..
+```
 
 ## Validate
 
