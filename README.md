@@ -49,9 +49,6 @@ If you are using a custom lambda runtime (for rust, golang, c++, etc) or contain
 - `AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER`
   - If set to `true`, the lambda telemetry log file descriptor will be disabled for the handler.
   - If you find the filter is not working (especially in nodejs), try to set this to `true`.
-- `AWS_LAMBDA_LOG_FILTER_MULTI_THREAD`
-  - If set to `true`, the filter will use multi thread tokio runtime.
-  - When set to `true`, if you want to control the number of worker threads, set `TOKIO_WORKER_THREADS`.
 
 ### Best Practices
 
