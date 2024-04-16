@@ -28,8 +28,8 @@ impl TransformerFactory {
 
   /// Create a transformer that filters and transforms the log lines.
   pub fn create(&self) -> impl FnMut(String) -> Option<String> {
-    let s = self.clone();
-    move |line| s.transform(line)
+    let transformer = self.clone();
+    move |line| transformer.transform(line)
   }
 
   fn transform(&self, mut line: String) -> Option<String> {
@@ -78,9 +78,14 @@ impl TransformerFactory {
 /// Return if the line is a valid JSON object with the `"_aws"` key.
 fn is_emf(line: &str) -> bool {
   // perf: check if the line is wrapped with `{}` before parsing it as JSON
-  // so we can fast fail if it's not a JSON object
-  let trimmed = line.trim();
-  if !trimmed.starts_with('{') || !trimmed.ends_with('}') {
+  // so we can fast fail if it's not a JSON object.
+  // we trim the line in 2 steps to avoid unnecessary trimming.
+  let trimmed = line.trim_start();
+  if !trimmed.starts_with('{') {
+    return false;
+  }
+  let trimmed = trimmed.trim_end();
+  if !trimmed.ends_with('}') {
     return false;
   }
 
