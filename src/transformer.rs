@@ -115,6 +115,7 @@ mod tests {
     assert!(!is_emf(r#"{"_aws": {"key": "value"}"#));
     // not a JSON object
     assert!(!is_emf("123"));
+    assert!(!is_emf("{"));
   }
 
   fn assert_kept(factory: &TransformerFactory, line: &str) {
