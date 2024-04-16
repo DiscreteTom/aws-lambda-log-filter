@@ -40,16 +40,16 @@ mod tests {
   use super::*;
   use std::env;
 
-  #[test]
-  fn test_create_proxy_default() {
+  #[tokio::test]
+  async fn test_create_proxy_default() {
     let proxy = create_proxy();
     assert_eq!(proxy.disable_lambda_telemetry_log_fd_for_handler, true);
     assert_eq!(proxy.stdout.is_some(), true);
     assert_eq!(proxy.stderr.is_some(), true);
   }
 
-  #[test]
-  fn test_enable_lambda_telemetry_log_fd_for_handler() {
+  #[tokio::test]
+  async fn test_enable_lambda_telemetry_log_fd_for_handler() {
     env::set_var(
       "AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER",
       "0",
@@ -59,8 +59,8 @@ mod tests {
     env::remove_var("AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER");
   }
 
-  #[test]
-  fn test_sink_stdout_stderr() {
+  #[tokio::test]
+  async fn test_sink_stdout_stderr() {
     env::set_var("AWS_LAMBDA_LOG_FILTER_SINK", "stdout");
     create_proxy();
     env::remove_var("AWS_LAMBDA_LOG_FILTER_SINK");
@@ -70,23 +70,23 @@ mod tests {
     env::remove_var("AWS_LAMBDA_LOG_FILTER_SINK");
   }
 
-  #[test]
-  fn test_telemetry_log_fd_not_set() {
+  #[tokio::test]
+  async fn test_telemetry_log_fd_not_set() {
     env::set_var("AWS_LAMBDA_LOG_FILTER_SINK", "telemetry_log_fd");
     assert!(std::panic::catch_unwind(|| create_proxy()).is_err());
     env::remove_var("AWS_LAMBDA_LOG_FILTER_SINK");
   }
 
-  #[test]
-  fn test_telemetry_log_fd() {
+  #[tokio::test]
+  async fn test_telemetry_log_fd() {
     env::set_var("AWS_LAMBDA_LOG_FILTER_SINK", "telemetry_log_fd");
     env::set_var("_LAMBDA_TELEMETRY_LOG_FD", "1");
     create_proxy();
     env::remove_var("AWS_LAMBDA_LOG_FILTER_SINK");
   }
 
-  #[test]
-  fn test_invalid_sink() {
+  #[tokio::test]
+  async fn test_invalid_sink() {
     env::set_var("AWS_LAMBDA_LOG_FILTER_SINK", "invalid");
     assert!(std::panic::catch_unwind(|| create_proxy()).is_err());
     env::remove_var("AWS_LAMBDA_LOG_FILTER_SINK");
