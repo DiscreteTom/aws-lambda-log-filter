@@ -27,6 +27,8 @@ jobs:
 
       # run tests
       - uses: actions-rs/cargo@v1
+        env:
+          RUST_TEST_THREADS: 1
         with:
           use-cross: true
           command: test
