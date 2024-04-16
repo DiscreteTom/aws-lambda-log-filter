@@ -30,9 +30,9 @@ The SAM will deploy the stack with an API. Test it with `plow`:
 
 ```bash
 # e.g. disable the layer, test 1000 requests, 10 log messages per invocation
-plow -n 1000 https://abcdefgh.execute-api.us-east-1.amazonaws.com/Prod/disabled/10
+plow -n 1000 https://abcdefgh.execute-api.us-east-1.amazonaws.com/Prod/10/disabled
 # e.g. enable the layer, test 1000 requests, 10 log messages per invocation
-plow -n 1000 https://abcdefgh.execute-api.us-east-1.amazonaws.com/Prod/enabled/10
+plow -n 1000 https://abcdefgh.execute-api.us-east-1.amazonaws.com/Prod/10/enabled
 ```
 
 After tests with `plow`, checkout integration latency in API Gateway's metrics and duration in lambda metrics.
