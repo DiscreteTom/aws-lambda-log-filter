@@ -1,14 +1,16 @@
 mod transformer;
 
-use aws_lambda_log_proxy::{LogProxy, Sink};
+use aws_lambda_log_proxy::{LogProxy, SimpleProcessor, Sink};
 use transformer::TransformerFactory;
 
-fn create_proxy() -> LogProxy {
-  let sink = Sink::lambda_telemetry_log_fd().unwrap_or_else(|_| Sink::stdout());
+fn create_proxy() -> LogProxy<SimpleProcessor, SimpleProcessor> {
+  let sink = Sink::lambda_telemetry_log_fd()
+    .map(|s| s.spawn())
+    .unwrap_or_else(|_| Sink::stdout().spawn());
   let tf = TransformerFactory::new();
 
-  LogProxy::default()
-    .disable_lambda_telemetry_log_fd(
+  LogProxy::new()
+    .disable_lambda_telemetry_log_fd_for_handler(
       std::env::var("AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER")
         .map(|s| s == "true")
         .unwrap_or(false),
@@ -42,7 +44,7 @@ mod tests {
   #[test]
   fn test_create_proxy() {
     let proxy = create_proxy();
-    assert_eq!(proxy.disable_lambda_telemetry_log_fd, false);
+    assert_eq!(proxy.disable_lambda_telemetry_log_fd_for_handler, false);
     assert_eq!(proxy.stdout.is_some(), true);
     assert_eq!(proxy.stderr.is_some(), true);
 
@@ -51,7 +53,7 @@ mod tests {
       "true",
     );
     let proxy = create_proxy();
-    assert_eq!(proxy.disable_lambda_telemetry_log_fd, true);
+    assert_eq!(proxy.disable_lambda_telemetry_log_fd_for_handler, true);
     env::remove_var("AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER");
   }
 }
