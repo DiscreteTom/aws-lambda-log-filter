@@ -19,6 +19,8 @@ jobs:
       - run: rm .cargo/*
 
       - name: Generate code coverage
+        env:
+          RUST_TEST_THREADS: 1
         run: |
           cargo +nightly tarpaulin --verbose --all-features --workspace --timeout 120 --out xml
 
