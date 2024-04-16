@@ -42,6 +42,7 @@ mod tests {
 
   #[tokio::test]
   async fn test_create_proxy_default() {
+    env::remove_var("AWS_LAMBDA_LOG_FILTER_SINK");
     let proxy = create_proxy();
     assert_eq!(proxy.disable_lambda_telemetry_log_fd_for_handler, true);
     assert_eq!(proxy.stdout.is_some(), true);
@@ -80,8 +81,9 @@ mod tests {
   #[tokio::test]
   async fn test_telemetry_log_fd() {
     env::set_var("AWS_LAMBDA_LOG_FILTER_SINK", "telemetry_log_fd");
-    env::set_var("_LAMBDA_TELEMETRY_LOG_FD", "1");
+    env::set_var("_LAMBDA_TELEMETRY_LOG_FD", "2");
     create_proxy();
+    env::remove_var("_LAMBDA_TELEMETRY_LOG_FD");
     env::remove_var("AWS_LAMBDA_LOG_FILTER_SINK");
   }
 
