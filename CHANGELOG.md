@@ -5,6 +5,7 @@
 - Feat: add environment variable `AWS_LAMBDA_LOG_FILTER_MULTI_THREAD`.
 - Perf: fast fail if the log line doesn't ends with `}` when checking EMF.
 - Perf: apply single thread tokio executor.
+- Perf: apply aws-lambda-log-proxy@0.2.0.
 
 ## v0.1.2
 
