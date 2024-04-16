@@ -88,11 +88,14 @@ If you are using a custom lambda runtime (for rust, golang, c++, etc) or contain
 
 ## Cost and Performance
 
-Performance may vary depending on the log volume and the filter configuration (e.g. a complex regex filter may slow down the process). If there are only hundreds lines of logs, and the filter is not complex, the performance impact should be negligible (usually less than 5ms, and since the processing is asynchronously, synchronous invokers like API Gateway won't be affected).
+Performance may vary depending on the log volume and the filter configuration (e.g. a complex regex filter may slow down the process). If there are only hundreds lines of logs, and the filter is not complex, the performance impact should be negligible (usually less than 10ms, and since the processing is asynchronously, synchronous invokers like API Gateway won't be affected).
 
 The cost is mainly from the additional execution time. This also vary depending on the log volume and the filter configuration.
 
 However, it is pretty easy to compare between enabling and disabling the filter, just use the environment variable `AWS_LAMBDA_EXEC_WRAPPER` as a switch, test the performance and cost in your own real workloads, and decide whether to use it.
+
+> [!TIP]
+> Since the filter will cost some CPU power, you might need to modify the memory size of your Lambda function. You can try to benchmark your function with [AWS Lambda Power Tuning](https://github.com/alexcasalboni/aws-lambda-power-tuning) to find the optimal memory size.
 
 ## Possible Data Loss
 
