@@ -1,7 +1,8 @@
 # CHANGELOG
 
-## Next
+## v0.2.0
 
+- **_Breaking Change_**: `_LAMBDA_TELEMETRY_LOG_FD` is disabled for the handler process by default.
 - Feat: add environment variable `AWS_LAMBDA_LOG_FILTER_SINK`.
 - Perf: fast fail if the log line doesn't ends with `}` when checking EMF.
 - Perf: apply single thread tokio executor.

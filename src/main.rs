@@ -24,7 +24,7 @@ fn create_proxy() -> LogProxy<SimpleProcessor, SimpleProcessor> {
     .disable_lambda_telemetry_log_fd_for_handler(
       std::env::var("AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER")
         .map(|s| s == "true")
-        .unwrap_or(false),
+        .unwrap_or(true),
     )
     .stdout(|p| p.transformer(tf.create()).sink(sink.clone()))
     .stderr(|p| p.transformer(tf.create()).sink(sink))

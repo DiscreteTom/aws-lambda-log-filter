@@ -47,8 +47,9 @@ If you are using a custom lambda runtime (for rust, golang, c++, etc) or contain
   - If set, log lines will be wrapped in JSON with this value as the log level.
   - E.g. `INFO`, `ERROR`, `DEBUG`, etc.
 - `AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER`
-  - If set to `true`, the lambda telemetry log file descriptor will be disabled for the handler.
-  - If you find the filter is not working (especially in nodejs), try to set this to `true`.
+  - If set to `true`, the lambda telemetry log file descriptor will be disabled for the handler process.
+  - Any other value will be treated as `false`.
+  - If not set, treat as `true`.
 - `AWS_LAMBDA_LOG_FILTER_SINK`
   - The sink to output the filtered logs.
   - Available values: `stdout`, `stderr`, `telemetry_log_fd`.
