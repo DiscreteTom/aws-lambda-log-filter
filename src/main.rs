@@ -4,9 +4,20 @@ use aws_lambda_log_proxy::{LogProxy, SimpleProcessor, Sink};
 use transformer::TransformerFactory;
 
 fn create_proxy() -> LogProxy<SimpleProcessor, SimpleProcessor> {
-  let sink = Sink::lambda_telemetry_log_fd()
-    .map(|s| s.spawn())
-    .unwrap_or_else(|_| Sink::stdout().spawn());
+  let sink = std::env::var("AWS_LAMBDA_LOG_FILTER_SINK")
+    .map(|s| match s.as_str() {
+      "stdout" => Sink::stdout().spawn(),
+      "stderr" => Sink::stderr().spawn(),
+      "telemetry_log_fd" => Sink::lambda_telemetry_log_fd().unwrap().spawn(),
+      _ => panic!("Invalid sink: {s}"),
+    })
+    .unwrap_or_else(|_| {
+      // user doesn't specify the sink, prefer telemetry_log_fd if available, otherwise stdout
+      Sink::lambda_telemetry_log_fd()
+        .map(|s| s.spawn())
+        .unwrap_or_else(|_| Sink::stdout().spawn())
+    });
+
   let tf = TransformerFactory::new();
 
   LogProxy::new()

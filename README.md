@@ -49,6 +49,10 @@ If you are using a custom lambda runtime (for rust, golang, c++, etc) or contain
 - `AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER`
   - If set to `true`, the lambda telemetry log file descriptor will be disabled for the handler.
   - If you find the filter is not working (especially in nodejs), try to set this to `true`.
+- `AWS_LAMBDA_LOG_FILTER_SINK`
+  - The sink to output the filtered logs.
+  - Available values: `stdout`, `stderr`, `telemetry_log_fd`.
+  - If not specified, prefer `telemetry_log_fd` if available, otherwise `stdout`.
 
 ### Best Practices
 
