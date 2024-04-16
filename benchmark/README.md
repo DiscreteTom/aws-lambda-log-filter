@@ -29,9 +29,9 @@ Run [`./validate.sh`](./validate.sh) to ensure the `invocation/next` is properly
 The SAM will deploy the stack with an API. Test it with `plow`:
 
 ```bash
-# e.g. disable the layer, test 1000 requests, 10 log messages per invocation
+# e.g. disable the layer, test 1000 requests, 10 log messages (~4 lines per message) per invocation
 plow -n 1000 https://abcdefgh.execute-api.us-east-1.amazonaws.com/Prod/10/disabled
-# e.g. enable the layer, test 1000 requests, 10 log messages per invocation
+# e.g. enable the layer, test 1000 requests, 10 log messages (~4 lines per message) per invocation
 plow -n 1000 https://abcdefgh.execute-api.us-east-1.amazonaws.com/Prod/10/enabled
 ```
 
