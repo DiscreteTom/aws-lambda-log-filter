@@ -1,5 +1,6 @@
+use chrono::Utc;
 use regex::Regex;
-use serde_json::Value;
+use serde_json::{json, Value};
 
 #[derive(Clone)]
 pub(crate) struct TransformerFactory {
@@ -62,8 +63,8 @@ impl TransformerFactory {
     }
 
     if let Some(level) = &self.wrap_in_json_level {
-      line = serde_json::json!({
-        "timestamp": chrono::Utc::now().format("%Y-%m-%dT%H:%M:%S%.6fZ").to_string(),
+      line = json!({
+        "timestamp": Utc::now().format("%Y-%m-%dT%H:%M:%S%.6fZ").to_string(),
         "level": level,
         "message": line,
       })
