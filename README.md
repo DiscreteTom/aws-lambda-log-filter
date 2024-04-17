@@ -42,17 +42,14 @@ If you are using a custom lambda runtime (for rust, golang, c++, etc) or contain
   - If set, only lines that start with this prefix will be kept.
 - `AWS_LAMBDA_LOG_FILTER_IGNORE_BY_PREFIX`
   - If set, lines that start with this prefix will be ignored.
-  - [EMF](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Embedded_Metric_Format_Specification.html) won't be affected.
 - `AWS_LAMBDA_LOG_FILTER_FILTER_BY_REGEX`
   - If set, only lines that match this regex will be kept.
   - The regex must be a valid [rust regex](https://docs.rs/regex/latest/regex/#syntax).
   - Keep the regex simple to avoid performance issues.
-  - [EMF](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Embedded_Metric_Format_Specification.html) won't be affected.
 - `AWS_LAMBDA_LOG_FILTER_IGNORE_BY_REGEX`
   - If set, lines that match this regex will be ignored.
   - The regex must be a valid [rust regex](https://docs.rs/regex/latest/regex/#syntax).
   - Keep the regex simple to avoid performance issues.
-  - [EMF](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Embedded_Metric_Format_Specification.html) won't be affected.
 
 #### Output Enhancement
 
