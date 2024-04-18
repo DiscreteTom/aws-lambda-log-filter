@@ -115,4 +115,12 @@ mod tests {
     assert!(std::panic::catch_unwind(|| create_proxy()).is_err());
     env::remove_var("AWS_LAMBDA_LOG_FILTER_SINK");
   }
+
+  #[tokio::test]
+  async fn test_proxy_buffer_size() {
+    env::set_var("AWS_LAMBDA_LOG_FILTER_PROXY_BUFFER_SIZE", "32");
+    let proxy = create_proxy();
+    assert_eq!(proxy.buffer_size, 32);
+    env::remove_var("AWS_LAMBDA_LOG_FILTER_PROXY_BUFFER_SIZE");
+  }
 }
