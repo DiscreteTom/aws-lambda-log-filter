@@ -1,7 +1,13 @@
 import { faker } from "@faker-js/faker";
+import { Metrics, MetricUnit } from "@aws-lambda-powertools/metrics";
 
 const LOG_COUNT = Number(process.env.LOG_COUNT);
 const ADD_CPU_TASK = process.env.ADD_CPU_TASK == "true";
+
+const metrics = new Metrics({
+  namespace: "LambdaLogFilter",
+  serviceName: "benchmark",
+});
 
 export const handler = async () => {
   let cpuTime = 0;
@@ -20,6 +26,9 @@ export const handler = async () => {
   if (ADD_CPU_TASK) {
     process.stdout.write(`total cpu time: ${cpuTime}ms\n`);
   }
+
+  metrics.addMetric("logs", MetricUnit.Count, LOG_COUNT);
+  metrics.publishStoredMetrics();
 
   process.stdout.write(`done\n`);
 

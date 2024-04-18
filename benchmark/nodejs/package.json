@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@aws-lambda-powertools/metrics": "^2.1.0",
     "@faker-js/faker": "^8.4.1"
   }
 }

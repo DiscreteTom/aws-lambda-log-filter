@@ -2,6 +2,18 @@
 # yarn lockfile v1
 
 
+"@aws-lambda-powertools/commons@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@aws-lambda-powertools/commons/-/commons-2.1.0.tgz#9b1ced20f03933e787836fbf04d872df4d693e5c"
+  integrity sha512-pFIlGa2IreeQ8elvuWlqxp6q/R4Zx7EqzCAlj0yXg12XpQprF4BhuE3NpeF09MA/QkyCot5Hxu3kG95E35XETA==
+
+"@aws-lambda-powertools/metrics@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@aws-lambda-powertools/metrics/-/metrics-2.1.0.tgz#0e3b8dc72d18133856823c5059b5ebdce0b574d7"
+  integrity sha512-U4Da+UNBi5bCPuJhfLmuWtX4GVSwN/xGumoArN97jRlmz24kmKR3rYAps4iz5CBz6C91eKhRCnm84ijfyJyTMQ==
+  dependencies:
+    "@aws-lambda-powertools/commons" "^2.1.0"
+
 "@faker-js/faker@^8.4.1":
   version "8.4.1"
   resolved "https://registry.yarnpkg.com/@faker-js/faker/-/faker-8.4.1.tgz#5d5e8aee8fce48f5e189bf730ebd1f758f491451"
