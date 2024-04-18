@@ -67,10 +67,16 @@ If you are using a custom lambda runtime (for rust, golang, c++, etc) or contain
   - If set to `true`, the lambda telemetry log file descriptor will be disabled for the handler process.
   - Any other value will be treated as `false`.
   - If not set, treat as `true`.
+- `AWS_LAMBDA_LOG_FILTER_PROXY_BUFFER_SIZE`
+  - Increase this value if the processing is slow (e.g. you are using a complex regex).
+  - Defaults to `256` lines.
 - `AWS_LAMBDA_LOG_FILTER_SINK`
   - The sink to output the filtered logs.
   - Available values: `stdout`, `stderr`, `telemetry_log_fd`.
   - If not specified, prefer `telemetry_log_fd` if available, otherwise `stdout`.
+- `AWS_LAMBDA_LOG_FILTER_SINK_BUFFER_SIZE`
+  - Increase this value if the sink is slow.
+  - Defaults to `16` lines.
 
 ## FAQ
 

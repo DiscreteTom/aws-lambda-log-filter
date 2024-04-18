@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.2.1
+
+- Feat: add environment variable `AWS_LAMBDA_LOG_FILTER_PROXY_BUFFER_SIZE` and `AWS_LAMBDA_LOG_FILTER_SINK_BUFFER_SIZE`.
+
 ## v0.2.0
 
 - **_Breaking Change_**: `_LAMBDA_TELEMETRY_LOG_FD` is disabled for the handler process by default.
