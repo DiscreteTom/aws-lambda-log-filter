@@ -9,7 +9,7 @@ async fn main() {
   create_proxy().start().await;
 }
 
-fn create_proxy() -> LogProxy<SimpleProcessor, SimpleProcessor> {
+fn create_proxy() -> LogProxy<SimpleProcessor> {
   let sink = std::env::var("AWS_LAMBDA_LOG_FILTER_SINK")
     .map(|s| match s.as_str() {
       "stdout" => prepare_sink(Sink::stdout()),
@@ -24,16 +24,8 @@ fn create_proxy() -> LogProxy<SimpleProcessor, SimpleProcessor> {
         .unwrap_or_else(|_| prepare_sink(Sink::stdout()))
     });
 
-  let tf = TransformerFactory::new();
-
-  let mut proxy = LogProxy::new()
-    .disable_lambda_telemetry_log_fd_for_handler(
-      std::env::var("AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER")
-        .map(|s| s == "true")
-        .unwrap_or(true),
-    )
-    .stdout(|p| p.transformer(tf.create()).sink(sink.clone()))
-    .stderr(|p| p.transformer(tf.create()).sink(sink));
+  let mut proxy =
+    LogProxy::new().processor(|p| p.transformer(TransformerFactory::new().create()).sink(sink));
 
   if let Some(size) = parse_buffer_size("AWS_LAMBDA_LOG_FILTER_PROXY_BUFFER_SIZE") {
     proxy = proxy.buffer_size(size)
@@ -66,20 +58,7 @@ mod tests {
   async fn test_create_proxy_default() {
     env::remove_var("AWS_LAMBDA_LOG_FILTER_SINK");
     let proxy = create_proxy();
-    assert_eq!(proxy.disable_lambda_telemetry_log_fd_for_handler, true);
-    assert_eq!(proxy.stdout.is_some(), true);
-    assert_eq!(proxy.stderr.is_some(), true);
-  }
-
-  #[tokio::test]
-  async fn test_enable_lambda_telemetry_log_fd_for_handler() {
-    env::set_var(
-      "AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER",
-      "0",
-    );
-    let proxy = create_proxy();
-    assert_eq!(proxy.disable_lambda_telemetry_log_fd_for_handler, false);
-    env::remove_var("AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER");
+    assert_eq!(proxy.processor.is_some(), true);
   }
 
   #[tokio::test]

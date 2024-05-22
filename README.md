@@ -63,10 +63,6 @@ If you are using a custom lambda runtime (for rust, golang, c++, etc) or contain
 
 #### Misc
 
-- `AWS_LAMBDA_LOG_FILTER_DISABLE_LAMBDA_TELEMETRY_LOG_FD_FOR_HANDLER`
-  - If set to `true`, the lambda telemetry log file descriptor will be disabled for the handler process.
-  - Any other value will be treated as `false`.
-  - If not set, treat as `true`.
 - `AWS_LAMBDA_LOG_FILTER_PROXY_BUFFER_SIZE`
   - Increase this value if the processing is slow (e.g. you are using a complex regex).
   - Defaults to `256` lines.
