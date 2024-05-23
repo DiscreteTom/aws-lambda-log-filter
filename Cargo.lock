@@ -49,7 +49,7 @@ checksum = "f1fdabc7756949593fe60f30ec81974b613357de856987752631dea1e3394c80"
 
 [[package]]
 name = "aws-lambda-log-filter"
-version = "0.2.1"
+version = "0.3.0"
 dependencies = [
  "aws-lambda-log-proxy",
  "chrono",
