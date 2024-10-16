@@ -1,6 +1,7 @@
+use aws_lambda_log_proxy::is_emf;
 use chrono::Utc;
 use regex::Regex;
-use serde_json::{json, Value};
+use serde_json::json;
 
 #[derive(Clone)]
 pub(crate) struct TransformerFactory {
@@ -75,48 +76,11 @@ impl TransformerFactory {
   }
 }
 
-/// Return if the line is a valid JSON object with the `"_aws"` key.
-fn is_emf(line: &str) -> bool {
-  // perf: check if the line is wrapped with `{}` before parsing it as JSON
-  // so we can fast fail if it's not a JSON object.
-  // we trim the line in 2 steps to avoid unnecessary trimming.
-  let trimmed = line.trim_start();
-  if !trimmed.starts_with('{') {
-    return false;
-  }
-  let trimmed = trimmed.trim_end();
-  if !trimmed.ends_with('}') {
-    return false;
-  }
-
-  serde_json::from_str(trimmed)
-    .ok()
-    .map(|value: Value| value.get("_aws").is_some())
-    .unwrap_or(false)
-}
-
 #[cfg(test)]
 mod tests {
   use super::*;
+  use serde_json::Value;
   use std::{collections::HashMap, env};
-
-  #[test]
-  fn check_emf() {
-    // compact
-    assert!(is_emf(r#"{"_aws":{"key":"value"}}"#));
-    // with whitespace
-    assert!(is_emf(r#"{"_aws": {"key": "value"}}"#));
-    assert!(is_emf(r#"  {  "_aws"  : {"key": "value"}  }  "#));
-
-    // missing _aws key
-    assert!(!is_emf(r#"{"key": "value"}"#));
-    assert!(!is_emf(r#"{"  _aws":{"key":"value"}}"#));
-    // invalid JSON
-    assert!(!is_emf(r#"{"_aws": {"key": "value"}"#));
-    // not a JSON object
-    assert!(!is_emf("123"));
-    assert!(!is_emf("{"));
-  }
 
   fn assert_kept(factory: &TransformerFactory, line: &str) {
     assert_eq!(factory.create()(line.to_string()), Some(line.to_string()));
