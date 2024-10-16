@@ -42,6 +42,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "anyhow"
+version = "1.0.89"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "86fdf8605db99b54d3cd748a44c6d04df638eb5dafb219b135d0149bd0db01f6"
+
+[[package]]
 name = "autocfg"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -60,26 +66,29 @@ dependencies = [
 
 [[package]]
 name = "aws-lambda-log-proxy"
-version = "0.3.0"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "55f7c371c075cea5e0e77c0550bd143d79dc64fb3dc408f1a61b3401f2a0ca16"
+checksum = "a57f90b31a34ba00c72b63d819c0f867700595d9fbb6179354281b91d095ceb8"
 dependencies = [
  "aws-lambda-runtime-proxy",
  "chrono",
- "http",
+ "serde_json",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
 name = "aws-lambda-runtime-proxy"
-version = "0.2.1"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "547d7dea285f93fe8fb4f19dd20079f6e23bf7350b0802c932ca22ff407a689d"
+checksum = "ec5668683892f43cd8327cd0ee3ff6472bbc5093eff23a759e2132a987e274b5"
 dependencies = [
+ "anyhow",
  "http-body-util",
  "hyper",
  "hyper-util",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -604,6 +613,38 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "tracing"
+version = "0.1.40"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c3523ab5a71916ccf420eebdf5521fcef02141234bbc0b8a49f2fdc4544364ef"
+dependencies = [
+ "log",
+ "pin-project-lite",
+ "tracing-attributes",
+ "tracing-core",
+]
+
+[[package]]
+name = "tracing-attributes"
+version = "0.1.27"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "34704c8d6ebcbc939824180af020566b01a7c01f80641264eba0999f6c2b6be7"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "tracing-core"
+version = "0.1.32"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c06d3da6113f116aaee68e4d601191614c9053067f9ab7f6edbcb161237daa54"
+dependencies = [
+ "once_cell",
 ]
 
 [[package]]

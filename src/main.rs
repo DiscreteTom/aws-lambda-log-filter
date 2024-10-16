@@ -9,7 +9,7 @@ async fn main() {
   create_proxy().start().await;
 }
 
-fn create_proxy() -> LogProxy<SimpleProcessor> {
+fn create_proxy() -> LogProxy<SimpleProcessor<impl FnMut(String) -> Option<String>>> {
   let sink = std::env::var("AWS_LAMBDA_LOG_FILTER_SINK")
     .map(|s| match s.as_str() {
       "stdout" => prepare_sink(Sink::stdout()),
@@ -20,12 +20,15 @@ fn create_proxy() -> LogProxy<SimpleProcessor> {
     .unwrap_or_else(|_| {
       // user doesn't specify the sink, prefer telemetry_log_fd if available, otherwise stdout
       Sink::lambda_telemetry_log_fd()
-        .map(|s| prepare_sink(s))
+        .map(prepare_sink)
         .unwrap_or_else(|_| prepare_sink(Sink::stdout()))
     });
 
-  let mut proxy =
-    LogProxy::new().processor(|p| p.transformer(TransformerFactory::new().create()).sink(sink));
+  let mut proxy = LogProxy::new().simple(|p| {
+    p.transformer(TransformerFactory::new().create())
+      .sink(sink)
+      .build()
+  });
 
   if let Some(size) = parse_buffer_size("AWS_LAMBDA_LOG_FILTER_PROXY_BUFFER_SIZE") {
     proxy = proxy.buffer_size(size)
@@ -55,13 +58,6 @@ mod tests {
   use std::env;
 
   #[tokio::test]
-  async fn test_create_proxy_default() {
-    env::remove_var("AWS_LAMBDA_LOG_FILTER_SINK");
-    let proxy = create_proxy();
-    assert_eq!(proxy.processor.is_some(), true);
-  }
-
-  #[tokio::test]
   async fn test_sink_stdout_stderr() {
     env::set_var("AWS_LAMBDA_LOG_FILTER_SINK", "stdout");
     create_proxy();
@@ -75,7 +71,7 @@ mod tests {
   #[tokio::test]
   async fn test_telemetry_log_fd_not_set() {
     env::set_var("AWS_LAMBDA_LOG_FILTER_SINK", "telemetry_log_fd");
-    assert!(std::panic::catch_unwind(|| create_proxy()).is_err());
+    assert!(std::panic::catch_unwind(create_proxy).is_err());
     env::remove_var("AWS_LAMBDA_LOG_FILTER_SINK");
   }
 
@@ -91,7 +87,7 @@ mod tests {
   #[tokio::test]
   async fn test_invalid_sink() {
     env::set_var("AWS_LAMBDA_LOG_FILTER_SINK", "invalid");
-    assert!(std::panic::catch_unwind(|| create_proxy()).is_err());
+    assert!(std::panic::catch_unwind(create_proxy).is_err());
     env::remove_var("AWS_LAMBDA_LOG_FILTER_SINK");
   }
 
