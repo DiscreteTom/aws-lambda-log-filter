@@ -144,7 +144,7 @@ mod tests {
       env::set_var(key, value);
     }
     f();
-    for (key, _) in &map {
+    for key in map.keys() {
       env::remove_var(key);
     }
   }
@@ -152,11 +152,11 @@ mod tests {
   #[test]
   fn transformer_factory_new() {
     let tf = TransformerFactory::new();
-    assert!(matches!(tf.filter_by_prefix, None));
-    assert!(matches!(tf.ignore_by_prefix, None));
-    assert!(matches!(tf.filter_by_regex, None));
-    assert!(matches!(tf.ignore_by_regex, None));
-    assert!(matches!(tf.wrap_in_json_level, None));
+    assert!(tf.filter_by_prefix.is_none());
+    assert!(tf.ignore_by_prefix.is_none());
+    assert!(tf.filter_by_regex.is_none());
+    assert!(tf.ignore_by_regex.is_none());
+    assert!(tf.wrap_in_json_level.is_none());
 
     with_env(
       HashMap::from([
